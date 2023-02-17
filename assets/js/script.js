@@ -1,10 +1,11 @@
 $(document).ready(function () {
+
     $('#changeImg').click(function () {
         $.ajax({
-            url: 'index.php',
+            url: window.location.origin + '?api=1',
             type: 'POST',
             data: {
-                createImg: 1,
+                action: 'generateImg',
                 prompt: $('#prompt').val(),
             },
             success: function (response) {
@@ -21,20 +22,12 @@ $(document).ready(function () {
     $("#downloadImg").click(function () {
         var imgSrc = $("#openaiImg").attr("src");
         var filename = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-        //   console.log(filename);
-        // $.get(imgSrc, function (data) {
-        //     var link = $("<a></a>");
-        //     link.attr("href", window.URL.createObjectURL(data));
-        //     link.attr("download", filename);
-        //     link.appendTo("body");
-        //     link[0].click();
-        //     link.remove();
-        // }, "blob");
+        // console.log(window.location.origin + '?api=1');
         $.ajax({
-            url: 'index.php',
+            url: window.location.origin + '?api=1',
             method: "POST",
             data: {
-                action: 'download',
+                action: 'downloadImg',
                 url: imgSrc,
             },
             xhrFields: {

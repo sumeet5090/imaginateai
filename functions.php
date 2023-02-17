@@ -1,5 +1,8 @@
 <?php
 
+function renderView($viewName){
+    include_once 'views/' . $viewName. '.php';
+}
 
 function getImageCreated($data = [])
 {
@@ -17,8 +20,8 @@ function getImageCreated($data = [])
         'Content-Type: application/json',
     ));
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post));
-
     $response = curl_exec($ch);
+    
     curl_close($ch);
 
     return json_decode($response)->data[0]->url;
@@ -35,4 +38,15 @@ function downloadImage(){
     header("Content-Type: image/jpeg");
     header("Content-Disposition: attachment; filename=image.jpg");
     echo $data;
+}
+
+function d($var){
+    echo '<pre>';
+    print_r($var);
+    echo '</pre>';
+}
+
+function dd($var){
+    d($var);
+    die();
 }
