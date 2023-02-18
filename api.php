@@ -1,22 +1,25 @@
 <?php
 
-switch ($_POST['action']){
-    
+switch ($_POST['action']) {
+
     case 'generateImg':
-        echo getImageCreated(['prompt' => (string)$_POST['prompt']]);
-    
+        $response = generateImage(['prompt' => (string)$_POST['prompt']]);
+        if (!$errText = isApiError($response)) {
+            $url = json_decode($response)->data[0]->url;
+            $result['url'] = $url;
+        }else{
+            $result['error'] = $errText;
+        }
+        echo json_encode($result);
+        break;
+
     case 'downloadImg':
-        $imageUrl = $_POST["url"];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $imageUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        header("Content-Type: image/jpeg");
-        header("Content-Disposition: attachment; filename=image.jpg");
-        echo $data;
+        $response = downloadImage(['prompt' => (string)$_POST['prompt']]);
+        echo $response;
+        break;
     
     default:
+        break;
 }
 
 die();

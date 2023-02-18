@@ -1,5 +1,10 @@
 $(document).ready(function () {
 
+    function notice(text, warningTypeText) {
+        var asdf = '<div class="alert alert-' + warningTypeText + ' alert-dismissible fade show" role="alert">' + text + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        $('#notice-container').html(asdf);
+    }
+
     $('#changeImg').click(function () {
         $.ajax({
             url: window.location.origin + '?api=1',
@@ -8,9 +13,14 @@ $(document).ready(function () {
                 action: 'generateImg',
                 prompt: $('#prompt').val(),
             },
+            dataType: 'json',
             success: function (response) {
-                $('#openaiImg').attr('src', '');
-                $('#openaiImg').attr('src', response);
+                if(response['error']){
+                    notice(response['error'], 'warning');
+                }else{
+                    $('#openaiImg').attr('src', '');
+                    $('#openaiImg').attr('src', response['url']);
+                }
                 console.log(response);
             },
             error: function (xhr, status, error) {
@@ -22,7 +32,7 @@ $(document).ready(function () {
     $("#downloadImg").click(function () {
         var imgSrc = $("#openaiImg").attr("src");
         var filename = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-        // console.log(window.location.origin + '?api=1');
+
         $.ajax({
             url: window.location.origin + '?api=1',
             method: "POST",

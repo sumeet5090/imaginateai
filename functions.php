@@ -1,10 +1,11 @@
 <?php
 
-function renderView($viewName){
-    include_once 'views/' . $viewName. '.php';
+function renderView($viewName)
+{
+    include_once 'views/' . $viewName . '.php';
 }
 
-function getImageCreated($data = [])
+function generateImage($data = [])
 {
     global $url, $apikey;
 
@@ -13,6 +14,7 @@ function getImageCreated($data = [])
     $post['size'] = empty($data['size']) ? '1024x1024' : (string)$data['size'];
 
     $ch = curl_init($url);
+
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -24,29 +26,49 @@ function getImageCreated($data = [])
     
     curl_close($ch);
 
-    return json_decode($response)->data[0]->url;
+    // return json_decode($response)->data[0]->url;
+    return $response;
 }
 
-function downloadImage(){
-    $imageUrl = $_GET["url"];
+function downloadImage($imageUrl)
+{
     $ch = curl_init();
+    
     curl_setopt($ch, CURLOPT_URL, $imageUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $data = curl_exec($ch);
+    $response = curl_exec($ch);
     curl_close($ch);
-    
+
     header("Content-Type: image/jpeg");
     header("Content-Disposition: attachment; filename=image.jpg");
-    echo $data;
+
+    return $response;
 }
 
-function d($var){
+function d($var)
+{
     echo '<pre>';
-    print_r($var);
+    var_dump($var);
     echo '</pre>';
 }
 
-function dd($var){
+function dd($var)
+{
     d($var);
     die();
+}
+
+function isApiError($rawResponse)
+{
+    global $error;
+    try {
+        $response = json_decode($rawResponse);
+        
+        if (preg_match('/(invalid)|(invalid_api)|(invalid_api_key)/', $response->error->code)) {
+            throw new Exception($error['apiTokenExpired']);
+        }
+        return false;
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
 }
